@@ -95,7 +95,7 @@ public class LoanBrokerFrame extends JFrame {
     public void add(LoanRequest loanRequest, BankInterestReply bankReply) {
         JListLine rr = getRequestReply(loanRequest);
         if (rr != null && bankReply != null) {
-            rr.setBankReply(bankReply);;
+            rr.setBankReply(bankReply);
             list.repaint();
         }
     }

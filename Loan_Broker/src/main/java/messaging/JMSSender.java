@@ -48,7 +48,7 @@ public class JMSSender {
         }
     }
 
-    public void send(BankInterestRequest request) {
+    public void send(Message loanRequest, BankInterestRequest request) {
         try {
             Message message = session.createTextMessage(new Gson().toJson(request));
 

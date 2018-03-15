@@ -28,7 +28,7 @@ public class ClientMessageListener implements MessageListener {
             gui.add(loanRequest);
             JMSSender sender = new JMSSender();
             BankInterestRequest interestRequest = new BankInterestRequest(loanRequest.getAmount(), loanRequest.getTime());
-            sender.send(interestRequest);
+            sender.send(message, interestRequest);
             gui.add(loanRequest, interestRequest);
         } catch (JMSException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
