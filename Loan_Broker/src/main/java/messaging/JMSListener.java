@@ -13,6 +13,7 @@ import javax.jms.Session;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import model.JMSContext;
 
 public class JMSListener {
 
@@ -22,15 +23,19 @@ public class JMSListener {
     private Session session;
     private Destination destination;
     private MessageConsumer consumer;
-    private LoanMessageListener loanMessageListener;
+    private LoanBrokerFrame gui;
 
     public JMSListener(LoanBrokerFrame gui) {
+        this.gui = gui;
+    }
+
+    public void listen(String queue) {
         try {
             Properties properties = new Properties();
             properties.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.apache.activemq.jndi.ActiveMQInitialContextFactory");
             properties.setProperty(Context.PROVIDER_URL, "tcp://localhost:61616");
 
-            properties.put(("queue.clientToBroker"), "clientToBroker");
+            properties.put(("queue." + queue), queue);
 
             Context jndiContext = new InitialContext(properties);
             ConnectionFactory connectionFactory = (ConnectionFactory) jndiContext.lookup("ConnectionFactory");;
@@ -38,13 +43,18 @@ public class JMSListener {
             connection = connectionFactory.createConnection();
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-            destination = (Destination) jndiContext.lookup("clientToBroker");
+            destination = (Destination) jndiContext.lookup(queue);
             consumer = session.createConsumer(destination);
 
             connection.start();
 
-            loanMessageListener = new LoanMessageListener(gui);
-            consumer.setMessageListener(loanMessageListener);
+            if (queue.equals(JMSContext.CLIENT)) {
+                ClientMessageListener clientMessageListener = new ClientMessageListener(gui);
+                consumer.setMessageListener(clientMessageListener);
+            } else if (queue.equals(JMSContext.BANK)) {
+                BankMessageListener bankMessageListener = new BankMessageListener(gui);
+                consumer.setMessageListener(bankMessageListener);
+            }
         } catch (NamingException | JMSException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }

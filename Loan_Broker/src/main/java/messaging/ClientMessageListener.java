@@ -8,14 +8,15 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+import model.BankInterestRequest;
 import model.LoanRequest;
 
-public class LoanMessageListener implements MessageListener {
-    final static Logger LOGGER = Logger.getLogger(LoanMessageListener.class.getName());
+public class ClientMessageListener implements MessageListener {
+    final static Logger LOGGER = Logger.getLogger(ClientMessageListener.class.getName());
     
     private final LoanBrokerFrame gui;
     
-    public LoanMessageListener(LoanBrokerFrame gui) {
+    public ClientMessageListener(LoanBrokerFrame gui) {
         this.gui = gui;
     }
     
@@ -23,9 +24,12 @@ public class LoanMessageListener implements MessageListener {
     public void onMessage(Message msg) {
         try {
             TextMessage message = (TextMessage) msg;
-            System.out.println("Message received: " + message.getText());
             LoanRequest loanRequest = new Gson().fromJson(message.getText(), LoanRequest.class);
             gui.add(loanRequest);
+            JMSSender sender = new JMSSender();
+            BankInterestRequest interestRequest = new BankInterestRequest(loanRequest.getAmount(), loanRequest.getTime());
+            sender.send(interestRequest);
+            gui.add(loanRequest, interestRequest);
         } catch (JMSException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }

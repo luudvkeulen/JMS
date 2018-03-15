@@ -13,6 +13,7 @@ import javax.swing.border.EmptyBorder;
 import messaging.JMSListener;
 import model.BankInterestReply;
 import model.BankInterestRequest;
+import model.JMSContext;
 import model.LoanRequest;
 
 public class LoanBrokerFrame extends JFrame {
@@ -27,7 +28,8 @@ public class LoanBrokerFrame extends JFrame {
             public void run() {
                 try {
                     LoanBrokerFrame frame = new LoanBrokerFrame();
-                    new JMSListener(frame);
+                    new JMSListener(frame).listen(JMSContext.CLIENT);
+                    new JMSListener(frame).listen(JMSContext.BANK);
                     frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
