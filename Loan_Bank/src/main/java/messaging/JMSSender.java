@@ -50,12 +50,11 @@ public class JMSSender {
 
     public void send(BankInterestReply reply) {
         try {
-           
-              
             Message message = session.createTextMessage(new Gson().toJson(reply));
 
+
             producer.send(message);
-            
+
             session.close();
             connection.close();
         } catch (JMSException ex) {

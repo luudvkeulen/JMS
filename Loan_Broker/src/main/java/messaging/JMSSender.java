@@ -51,7 +51,7 @@ public class JMSSender {
     public void send(Message loanRequest, BankInterestRequest request) {
         try {
             Message message = session.createTextMessage(new Gson().toJson(request));
-
+           
             producer.send(message);
             session.close();
             connection.close();
