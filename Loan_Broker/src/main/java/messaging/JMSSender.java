@@ -53,6 +53,8 @@ public class JMSSender {
             Message message = session.createTextMessage(new Gson().toJson(request));
 
             producer.send(message);
+            session.close();
+            connection.close();
         } catch (JMSException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }

@@ -15,6 +15,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 
 import javax.naming.NamingException;
+import model.BankInterestReply;
 
 public class JMSSender {
 
@@ -47,13 +48,16 @@ public class JMSSender {
         }
     }
 
-    public void send(RequestReply rr) {
+    public void send(BankInterestReply reply) {
         try {
            
               
-            Message message = session.createTextMessage(new Gson().toJson(rr));
+            Message message = session.createTextMessage(new Gson().toJson(reply));
 
             producer.send(message);
+            
+            session.close();
+            connection.close();
         } catch (JMSException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }

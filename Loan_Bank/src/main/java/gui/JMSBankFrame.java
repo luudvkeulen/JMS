@@ -24,9 +24,6 @@ import model.BankInterestRequest;
 
 public class JMSBankFrame extends JFrame {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private JTextField tfReply;
@@ -106,7 +103,7 @@ public class JMSBankFrame extends JFrame {
                     rr.setReply(reply);
                     list.repaint();
                     JMSSender sender = new JMSSender();
-                    sender.send(rr);
+                    sender.send(reply);
                 }
             }
         });
