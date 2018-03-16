@@ -9,6 +9,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 import model.BankInterestReply;
+import model.LoanReply;
 import model.LoanRequest;
 
 public class BankMessageListener implements MessageListener {
@@ -25,10 +26,11 @@ public class BankMessageListener implements MessageListener {
         try {
             TextMessage message = (TextMessage) msg;
             BankInterestReply bankInterestReply = new Gson().fromJson(message.getText(), BankInterestReply.class);
-            System.out.println("Correlation reply id: " + message.getJMSCorrelationID());
+            //System.out.println("Correlation reply id: " + message.getJMSCorrelationID());
             LoanRequest request = gui.correlations.get(message.getJMSCorrelationID());
-            //JMSSender sender = new JMSSender();
-            //sender.send(new BankInterestRequest(loanRequest.getAmount(), loanRequest.getTime()));
+            BrokerToClient sender = new BrokerToClient(gui);
+            LoanReply reply = new LoanReply(bankInterestReply.getInterest(), bankInterestReply.getQuoteId());
+            sender.send(reply, message.getJMSCorrelationID());
             gui.add(request, bankInterestReply);
         } catch (JMSException ex) {
             LOGGER.log(Level.SEVERE, null, ex);

@@ -24,9 +24,8 @@ public class LoanMessageListener implements MessageListener {
     public void onMessage(Message msg) {
         try {
             TextMessage message = (TextMessage) msg;
-            System.out.println("Message received: " + message.getText());
             BankInterestRequest interestRequest = new Gson().fromJson(message.getText(), BankInterestRequest.class);
-            gui.add(interestRequest, message.getJMSMessageID());
+            gui.add(interestRequest, message.getJMSCorrelationID());
         } catch (JMSException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }

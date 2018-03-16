@@ -16,12 +16,11 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 
 import javax.naming.NamingException;
-import model.BankInterestRequest;
-import model.LoanRequest;
+import model.LoanReply;
 
-public class JMSSender {
+public class BrokerToClient {
 
-    final static Logger LOGGER = Logger.getLogger(JMSSender.class.getName());
+    final static Logger LOGGER = Logger.getLogger(BrokerToClient.class.getName());
     Connection connection;
     Session session;
 
@@ -29,14 +28,14 @@ public class JMSSender {
     MessageProducer producer;
     LoanBrokerFrame gui;
 
-    public JMSSender(LoanBrokerFrame gui) {
+    public BrokerToClient(LoanBrokerFrame gui) {
         this.gui = gui;
         try {
             Properties properties = new Properties();
             properties.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.apache.activemq.jndi.ActiveMQInitialContextFactory");
             properties.setProperty(Context.PROVIDER_URL, "tcp://localhost:61616");
 
-            properties.put(("queue.brokerToBank"), "brokerToBank");
+            properties.put(("queue.brokerToClient"), "brokerToClient");
 
             Context jndiContext = new InitialContext(properties);
             ConnectionFactory connectionFactory = (ConnectionFactory) jndiContext.lookup("ConnectionFactory");;
@@ -44,7 +43,7 @@ public class JMSSender {
             connection = connectionFactory.createConnection();
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-            destination = (Destination) jndiContext.lookup("brokerToBank");
+            destination = (Destination) jndiContext.lookup("brokerToClient");
             producer = session.createProducer(destination);
 
         } catch (NamingException | JMSException ex) {
@@ -52,12 +51,12 @@ public class JMSSender {
         }
     }
 
-    public void send(LoanRequest loanRequest, BankInterestRequest request) {
+    public void send(LoanReply reply, String correlation) {
         try {
-            Message message = session.createTextMessage(new Gson().toJson(request));
+            Message message = session.createTextMessage(new Gson().toJson(reply));
+            message.setJMSCorrelationID(correlation);
             producer.send(message);
-            System.out.println("Correlation: " + message.getJMSMessageID());
-            gui.correlations.put(message.getJMSMessageID(), loanRequest);
+            
             session.close();
             connection.close();
         } catch (JMSException ex) {

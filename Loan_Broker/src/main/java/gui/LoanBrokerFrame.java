@@ -30,8 +30,8 @@ public class LoanBrokerFrame extends JFrame {
             public void run() {
                 try {
                     LoanBrokerFrame frame = new LoanBrokerFrame();
-                    new JMSListener(frame).listen(JMSContext.CLIENT);
-                    new JMSListener(frame).listen(JMSContext.BANK);
+                    new JMSListener(frame).listen(JMSContext.CLIENTTOBROKER);
+                    new JMSListener(frame).listen(JMSContext.BANKTOBROKER);
                     frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();

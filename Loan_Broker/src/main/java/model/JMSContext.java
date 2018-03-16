@@ -1,6 +1,6 @@
 package model;
 
 public class JMSContext {
-    public static String CLIENT = "clientToBroker";
-    public static String BANK = "bankToBroker";
+    public static String CLIENTTOBROKER = "clientToBroker";
+    public static String BANKTOBROKER = "bankToBroker";
 }

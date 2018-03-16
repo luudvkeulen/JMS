@@ -105,7 +105,6 @@ public class JMSBankFrame extends JFrame {
                     rr.setReply(reply);
                     list.repaint();
                     JMSSender sender = new JMSSender();
-                    System.out.println("Correlation: " + correlations.get(rr.getRequest()));
                     sender.send(reply, correlations.get(rr.getRequest()));
                 }
             }
