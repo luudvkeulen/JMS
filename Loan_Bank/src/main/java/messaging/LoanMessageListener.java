@@ -1,6 +1,5 @@
 package messaging;
 
-
 import com.google.gson.Gson;
 import gui.JMSBankFrame;
 import java.util.logging.Level;
@@ -11,25 +10,23 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 import model.BankInterestRequest;
 
-
 public class LoanMessageListener implements MessageListener {
+
     final static Logger LOGGER = Logger.getLogger(LoanMessageListener.class.getName());
-    
+
     private final JMSBankFrame gui;
-    
+
     public LoanMessageListener(JMSBankFrame gui) {
         this.gui = gui;
     }
-    
+
     @Override
     public void onMessage(Message msg) {
         try {
             TextMessage message = (TextMessage) msg;
             System.out.println("Message received: " + message.getText());
             BankInterestRequest interestRequest = new Gson().fromJson(message.getText(), BankInterestRequest.class);
-            JMSSender sender = new JMSSender();
-            //sender.send(new BankInterestRequest(loanRequest.getAmount(), loanRequest.getTime()));
-            gui.add(interestRequest);
+            gui.add(interestRequest, message.getJMSMessageID());
         } catch (JMSException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }

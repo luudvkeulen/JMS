@@ -1,6 +1,7 @@
 package messaging;
 
 import com.google.gson.Gson;
+import gui.LoanBrokerFrame;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,6 +17,7 @@ import javax.naming.InitialContext;
 
 import javax.naming.NamingException;
 import model.BankInterestRequest;
+import model.LoanRequest;
 
 public class JMSSender {
 
@@ -25,8 +27,10 @@ public class JMSSender {
 
     Destination destination;
     MessageProducer producer;
+    LoanBrokerFrame gui;
 
-    public JMSSender() {
+    public JMSSender(LoanBrokerFrame gui) {
+        this.gui = gui;
         try {
             Properties properties = new Properties();
             properties.setProperty(Context.INITIAL_CONTEXT_FACTORY, "org.apache.activemq.jndi.ActiveMQInitialContextFactory");
@@ -48,11 +52,12 @@ public class JMSSender {
         }
     }
 
-    public void send(Message loanRequest, BankInterestRequest request) {
+    public void send(LoanRequest loanRequest, BankInterestRequest request) {
         try {
             Message message = session.createTextMessage(new Gson().toJson(request));
-           
             producer.send(message);
+            System.out.println("Correlation: " + message.getJMSMessageID());
+            gui.correlations.put(message.getJMSMessageID(), loanRequest);
             session.close();
             connection.close();
         } catch (JMSException ex) {

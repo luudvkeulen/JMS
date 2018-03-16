@@ -26,9 +26,9 @@ public class ClientMessageListener implements MessageListener {
             TextMessage message = (TextMessage) msg;
             LoanRequest loanRequest = new Gson().fromJson(message.getText(), LoanRequest.class);
             gui.add(loanRequest);
-            JMSSender sender = new JMSSender();
+            JMSSender sender = new JMSSender(gui);
             BankInterestRequest interestRequest = new BankInterestRequest(loanRequest.getAmount(), loanRequest.getTime());
-            sender.send(message, interestRequest);
+            sender.send(loanRequest, interestRequest);
             gui.add(loanRequest, interestRequest);
         } catch (JMSException ex) {
             LOGGER.log(Level.SEVERE, null, ex);

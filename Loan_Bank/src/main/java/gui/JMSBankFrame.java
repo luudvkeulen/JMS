@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -28,7 +29,8 @@ public class JMSBankFrame extends JFrame {
     private JPanel contentPane;
     private JTextField tfReply;
     private DefaultListModel<RequestReply<BankInterestRequest, BankInterestReply>> listModel = new DefaultListModel<RequestReply<BankInterestRequest, BankInterestReply>>();
-
+    private HashMap<BankInterestRequest, String> correlations = new HashMap<>();
+    
     /**
      * Launch the application.
      */
@@ -103,7 +105,8 @@ public class JMSBankFrame extends JFrame {
                     rr.setReply(reply);
                     list.repaint();
                     JMSSender sender = new JMSSender();
-                    sender.send(reply);
+                    System.out.println("Correlation: " + correlations.get(rr.getRequest()));
+                    sender.send(reply, correlations.get(rr.getRequest()));
                 }
             }
         });
@@ -114,7 +117,8 @@ public class JMSBankFrame extends JFrame {
         contentPane.add(btnSendReply, gbc_btnSendReply);
     }
 
-    public void add(BankInterestRequest request) {
+    public void add(BankInterestRequest request, String correlationID) {
+        correlations.put(request, correlationID);
         listModel.addElement(new RequestReply<BankInterestRequest, BankInterestReply>(request, null));
     }
 }

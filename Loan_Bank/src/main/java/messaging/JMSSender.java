@@ -48,11 +48,12 @@ public class JMSSender {
         }
     }
 
-    public void send(BankInterestReply reply) {
+    public void send(BankInterestReply reply, String correlationId) {
         try {
             Message message = session.createTextMessage(new Gson().toJson(reply));
 
-
+            message.setJMSCorrelationID(correlationId);
+            
             producer.send(message);
 
             session.close();
